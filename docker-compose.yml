@@ -1,0 +1,24 @@
+services:
+  # The Python BERT Model Service
+  fastapi-ai:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    environment:
+      - PORT=8000
+    # This matches your app.py filename
+    command: uvicorn app:app --host 0.0.0.0 --port 8000
+
+  # The Node.js Assignment Gateway
+  node-gateway:
+    build:
+      context: ./node-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - fastapi-ai
+    environment:
+      - PYTHON_SERVICE_URL=http://fastapi-ai:8000
